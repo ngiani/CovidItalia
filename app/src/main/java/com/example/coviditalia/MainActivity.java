@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
             @Override
             public void run() {
 
+                //Download and show data (or simple close connection alert) if connected to the internet
                 if (isConnected())
                 {
                     if (!alreadyDownloadedData)
@@ -112,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
                     canShowDialog = false;
                 }
 
+                //Show connection alert if not connected to the internet
                 else
                 {
                     Log.d("DBG", "Not connected");
