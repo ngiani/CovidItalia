@@ -11,7 +11,6 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import com.example.coviditalia.R;
 import com.example.coviditalia.tab1;
 import com.example.coviditalia.tab2;
-import com.example.coviditalia.tab3;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -20,7 +19,7 @@ import com.example.coviditalia.tab3;
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @StringRes
-    private static final int[] TAB_TITLES = new int[]{R.string.tab1, R.string.tab2, R.string.tab3};
+    private static final int[] TAB_TITLES = new int[]{R.string.tab1, R.string.tab2};
     private final Context mContext;
 
     public SectionsPagerAdapter(Context context, FragmentManager fm) {
@@ -38,8 +37,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                 return new tab1();
             case 1:
                 return new tab2();
-            case 2:
-                return new tab3();
             default:
                 return null;
         }

@@ -208,8 +208,8 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
         TextView recovered_counter = (TextView)findViewById(R.id.textView6);
         recovered_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayRecovered()), String.format("%d", situation.getNewRecovered())));
 
-        //TextView deaths_counter = (TextView)findViewById(R.id.textView8);
-        //deaths_counter.setText(String.format("%s (+%s)", String.format("%.d", situation.getTodayDeaths()), String.format("%d", situation.getNewDeaths())));
+        TextView deaths_counter = (TextView)findViewById(R.id.textView8);
+        deaths_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayDeaths()), String.format("%d", situation.getNewDeaths())));
 
         ShowGraphs();
     }
@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
 
         graph_2.addSeries(recovered_series);
 
-        /*GraphView graph_3 = (GraphView)findViewById(R.id.graph3);
+        GraphView graph_3 = (GraphView)findViewById(R.id.graph3);
         LineGraphSeries<DataPoint> death_series = new LineGraphSeries<>();
 
         for (int i = 0 ; i < situation.getDeathsHistory().length; i++)
@@ -266,6 +266,6 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
         graph_3.getViewport().setMinY(0);
         graph_3.getViewport().setMaxY(situation.getTodayDeaths());
 
-        graph_3.addSeries(death_series);*/
+        graph_3.addSeries(death_series);
     }
 }

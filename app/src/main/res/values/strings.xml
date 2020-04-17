@@ -6,9 +6,8 @@
     <string name="alert_connection_title">Nessuna connessione internet</string>
     <string name="alert_connection_body">Hai bisogno del WI-FI o dei dati mobili per utilizzare l\'applicazione</string>
     <string name="graph_1_label">Giorni dall\'inizio dell\'epidemia</string>
-    <string name="tab1">CASI TOTALI</string>
-    <string name="tab2">GUARITI</string>
-    <string name="tab3">DECEDUTI</string>
+    <string name="tab1">DATI</string>
+    <string name="tab2">MAPPE</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
