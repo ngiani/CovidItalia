@@ -19,7 +19,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="40sp"
+                android:layout_marginTop="25dp"
                 android:orientation="vertical"><![CDATA[>
 
 
@@ -70,7 +70,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="40sp"
+                android:layout_marginTop="25dp"
                 android:orientation="vertical"><![CDATA[>
 
 
@@ -121,7 +121,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="40sp"
+                android:layout_marginTop="25dp"
                 android:orientation="vertical">>
 
                 <TextView
@@ -166,7 +166,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="25dp"
                 android:orientation="vertical"
                 android:paddingBottom="60sp"><![CDATA[>
 

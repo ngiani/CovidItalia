@@ -8,6 +8,11 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -40,7 +45,7 @@ import java.nio.charset.Charset;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements  SituationUpdateListener{
+public class MainActivity extends AppCompatActivity implements  SituationUpdateListener {
 
     private Situation situation;
 
@@ -139,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
         return isConnected;
     }
 
+
     class JSONReaderTask extends AsyncTask<String, Void, String>
     {
 
@@ -208,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
         if (situation.getNewPositives() > 0 )
             positives_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayPositives()), String.format("%d", situation.getNewPositives())));
         else if (situation.getNewPositives() < 0)
-            positives_counter.setText(String.format("%s (-%s)", String.format("%,d", situation.getTodayPositives()), String.format("%d", situation.getNewPositives())));
+            positives_counter.setText(String.format("%s (%s)", String.format("%,d", situation.getTodayPositives()), String.format("%d", situation.getNewPositives())));
         else
             positives_counter.setText(String.format("%,d", situation.getTodayPositives()));
 
@@ -217,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
         if (situation.getNewTotalCases() > 0)
             total_cases_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayTotalCases()), String.format("%d", situation.getNewTotalCases())));
         else if (situation.getNewTotalCases() < 0)
-            total_cases_counter.setText(String.format("%s (-%s)", String.format("%,d", situation.getTodayTotalCases()), String.format("%d", situation.getNewTotalCases())));
+            total_cases_counter.setText(String.format("%s (%s)", String.format("%,d", situation.getTodayTotalCases()), String.format("%d", situation.getNewTotalCases())));
         else
             total_cases_counter.setText(String.format("%,d", situation.getTodayTotalCases()));
 
@@ -227,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
         if (situation.getNewTotalCases() > 0)
             recovered_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayRecovered()), String.format("%d", situation.getNewRecovered())));
         else if (situation.getNewTotalCases() < 0)
-            recovered_counter.setText(String.format("%s (-%s)", String.format("%,d", situation.getTodayRecovered()), String.format("%d", situation.getNewRecovered())));
+            recovered_counter.setText(String.format("%s (%s)", String.format("%,d", situation.getTodayRecovered()), String.format("%d", situation.getNewRecovered())));
         else
             recovered_counter.setText(String.format("%,d", situation.getTodayRecovered()));
 
@@ -236,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
         if (situation.getNewDeaths() > 0)
             deaths_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayDeaths()), String.format("%d", situation.getNewDeaths())));
         else if (situation.getNewDeaths() < 0)
-            deaths_counter.setText(String.format("%s (-%s)", String.format("%,d", situation.getTodayDeaths()), String.format("%d", situation.getNewDeaths())));
+            deaths_counter.setText(String.format("%s (%s)", String.format("%,d", situation.getTodayDeaths()), String.format("%d", situation.getNewDeaths())));
         else
             deaths_counter.setText(String.format("%,d", situation.getTodayDeaths()));
 

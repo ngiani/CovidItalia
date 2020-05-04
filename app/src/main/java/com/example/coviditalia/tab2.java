@@ -1,5 +1,7 @@
 package com.example.coviditalia;
 
+import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,13 +10,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link tab2#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class tab2 extends Fragment {
+public class tab2 extends Fragment implements OnMapReadyCallback {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -23,6 +33,8 @@ public class tab2 extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private MapView situationMap;
 
     public tab2() {
         // Required empty public constructor
@@ -49,16 +61,67 @@ public class tab2 extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
+        View view = inflater.inflate(R.layout.fragment_tab2, container, false);
+
+        situationMap = (MapView)view.findViewById(R.id.mapView);
+        situationMap.onCreate(savedInstanceState);
+        situationMap.getMapAsync(this);
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tab2, container, false);
+        return view;
     }
+
+    @Override
+    public void onResume() {
+        situationMap.onResume();
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        situationMap.onStop();
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        situationMap.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        situationMap.onLowMemory();
+        super.onLowMemory();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap)
+    {
+        googleMap.clear();
+
+        googleMap.getUiSettings().setRotateGesturesEnabled(false);
+        googleMap.getUiSettings().setTiltGesturesEnabled(false);
+
+        googleMap.getUiSettings().setScrollGesturesEnabled(true);
+        googleMap.getUiSettings().setZoomGesturesEnabled(true);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(41.902782, 12.496366), 5));
+
+        googleMap.addCircle(new CircleOptions().center(new LatLng(41.902782, 12.496366)).radius(50).strokeColor(Color.BLACK).strokeWidth(2).fillColor(Color.RED).visible(true));
+    }
+
 }
