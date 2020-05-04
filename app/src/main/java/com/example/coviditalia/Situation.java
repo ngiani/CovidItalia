@@ -7,14 +7,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Situation implements JSONReaderListener
 {
     private SituationUpdateListener situationUpdateListener;
 
+
     private ArrayList<Integer> total_cases = new ArrayList<>();
     private ArrayList<Integer> recovered = new ArrayList<>();
     private ArrayList<Integer> deaths = new ArrayList<>();
+    private ArrayList<Integer> positives = new ArrayList<>();
 
 
     public Situation(SituationUpdateListener listener)
@@ -22,6 +25,8 @@ public class Situation implements JSONReaderListener
         situationUpdateListener = listener;
 
     }
+
+    public int getTodayPositives() { return positives.get(positives.size() - 1); }
 
     public int getTodayRecovered()
     {
@@ -62,6 +67,25 @@ public class Situation implements JSONReaderListener
             return 0;
     }
 
+    public int getNewPositives()
+    {
+        if (positives.size() > 1)
+            return positives.get(positives.size() - 1) - positives.get(positives.size() - 2);
+        else
+            return 0;
+    }
+
+    public int[] getPositivesHistory()
+    {
+        int[] history = new int[positives.size()];
+
+        for (int i = 0; i < positives.size(); i++ )
+        {
+            history[i] = positives.get(i).intValue();
+        }
+
+        return history;
+    }
     public int[] getTotalCasesHistory()
     {
         int[] history = new int[total_cases.size()];
@@ -98,6 +122,26 @@ public class Situation implements JSONReaderListener
         return history;
     }
 
+    public int getPositivesPeak()
+    {
+        return Collections.max(positives);
+    }
+
+    public int getRecoveredPeak()
+    {
+        return Collections.max(recovered);
+    }
+
+    public int getDeathsPeak()
+    {
+        return Collections.max(deaths);
+    }
+
+    public int getTotalCasesPeak()
+    {
+        return Collections.max(total_cases);
+    }
+
     @Override
     public void OnJSONReaderResults(JSONArray result)
     {
@@ -111,7 +155,7 @@ public class Situation implements JSONReaderListener
                 total_cases.add(jsonObject.getInt("totale_casi"));
                 recovered.add(jsonObject.getInt("dimessi_guariti"));
                 deaths.add(jsonObject.getInt("deceduti"));
-
+                positives.add(jsonObject.getInt("totale_positivi"));
 
             } catch (JSONException e) {
                 Log.e("JSONException", e.getMessage());

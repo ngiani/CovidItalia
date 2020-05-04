@@ -202,14 +202,43 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
     public void OnSituationUpdate() {
 
         //Set current situation counters
-        TextView total_cases_counter = (TextView)findViewById(R.id.textView4);
-        total_cases_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayTotalCases()), String.format("%d", situation.getNewTotalCases())));
 
-        TextView recovered_counter = (TextView)findViewById(R.id.textView6);
-        recovered_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayRecovered()), String.format("%d", situation.getNewRecovered())));
+        TextView positives_counter = (TextView)findViewById(R.id.positive_counter);
 
-        TextView deaths_counter = (TextView)findViewById(R.id.textView8);
-        deaths_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayDeaths()), String.format("%d", situation.getNewDeaths())));
+        if (situation.getNewPositives() > 0 )
+            positives_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayPositives()), String.format("%d", situation.getNewPositives())));
+        else if (situation.getNewPositives() < 0)
+            positives_counter.setText(String.format("%s (-%s)", String.format("%,d", situation.getTodayPositives()), String.format("%d", situation.getNewPositives())));
+        else
+            positives_counter.setText(String.format("%,d", situation.getTodayPositives()));
+
+        TextView total_cases_counter = (TextView)findViewById(R.id.total_cases_counter);
+
+        if (situation.getNewTotalCases() > 0)
+            total_cases_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayTotalCases()), String.format("%d", situation.getNewTotalCases())));
+        else if (situation.getNewTotalCases() < 0)
+            total_cases_counter.setText(String.format("%s (-%s)", String.format("%,d", situation.getTodayTotalCases()), String.format("%d", situation.getNewTotalCases())));
+        else
+            total_cases_counter.setText(String.format("%,d", situation.getTodayTotalCases()));
+
+
+        TextView recovered_counter = (TextView)findViewById(R.id.recovered_counter);
+
+        if (situation.getNewTotalCases() > 0)
+            recovered_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayRecovered()), String.format("%d", situation.getNewRecovered())));
+        else if (situation.getNewTotalCases() < 0)
+            recovered_counter.setText(String.format("%s (-%s)", String.format("%,d", situation.getTodayRecovered()), String.format("%d", situation.getNewRecovered())));
+        else
+            recovered_counter.setText(String.format("%,d", situation.getTodayRecovered()));
+
+        TextView deaths_counter = (TextView)findViewById(R.id.deaths_counter);
+
+        if (situation.getNewDeaths() > 0)
+            deaths_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayDeaths()), String.format("%d", situation.getNewDeaths())));
+        else if (situation.getNewDeaths() < 0)
+            deaths_counter.setText(String.format("%s (-%s)", String.format("%,d", situation.getTodayDeaths()), String.format("%d", situation.getNewDeaths())));
+        else
+            deaths_counter.setText(String.format("%,d", situation.getTodayDeaths()));
 
         ShowGraphs();
     }
@@ -229,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
         graph_1.getViewport().setMaxX(situation.getTotalCasesHistory().length - 1);
         graph_1.getViewport().setYAxisBoundsManual(true);
         graph_1.getViewport().setMinY(0);
-        graph_1.getViewport().setMaxY(situation.getTodayTotalCases());
+        graph_1.getViewport().setMaxY(situation.getTotalCasesPeak());
 
         graph_1.addSeries(total_cases_series);
 
@@ -247,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
         graph_2.getViewport().setMaxX(situation.getRecoveredHistory().length - 1);
         graph_2.getViewport().setYAxisBoundsManual(true);
         graph_2.getViewport().setMinY(0);
-        graph_2.getViewport().setMaxY(situation.getTodayRecovered());
+        graph_2.getViewport().setMaxY(situation.getRecoveredPeak());
 
         graph_2.addSeries(recovered_series);
 
@@ -264,8 +293,25 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
         graph_3.getViewport().setMaxX(situation.getDeathsHistory().length - 1);
         graph_3.getViewport().setYAxisBoundsManual(true);
         graph_3.getViewport().setMinY(0);
-        graph_3.getViewport().setMaxY(situation.getTodayDeaths());
+        graph_3.getViewport().setMaxY(situation.getDeathsPeak());
 
         graph_3.addSeries(death_series);
+
+        GraphView graph_4 = (GraphView)findViewById(R.id.graph4);
+        LineGraphSeries<DataPoint> positives_series = new LineGraphSeries<>();
+
+        for (int i = 0 ; i < situation.getPositivesHistory().length; i++)
+        {
+            positives_series.appendData(new DataPoint(i, situation.getPositivesHistory()[i]), true, 200);
+        }
+
+        graph_4.getViewport().setXAxisBoundsManual(true);
+        graph_4.getViewport().setMinX(0);
+        graph_4.getViewport().setMaxX(situation.getPositivesHistory().length - 1);
+        graph_4.getViewport().setYAxisBoundsManual(true);
+        graph_4.getViewport().setMinY(0);
+        graph_4.getViewport().setMaxY(situation.getPositivesPeak());
+
+        graph_4.addSeries(positives_series);
     }
 }

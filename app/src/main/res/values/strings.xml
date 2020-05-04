@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">CovidItalia</string>
-    <string name="textview">CASI TOTALI</string>
-    <string name="textview2">GUARITI</string>
-    <string name="textview3">DECEDUTI</string>
+    <string name="total_cases">CASI TOTALI</string>
+    <string name="recovered">GUARITI</string>
+    <string name="deats">DECEDUTI</string>
+    <string name="positives">POSITIVI</string>
     <string name="alert_connection_title">Nessuna connessione internet</string>
     <string name="alert_connection_body">Hai bisogno del WI-FI o dei dati mobili per utilizzare l\'applicazione</string>
     <string name="graph_1_label">Giorni dall\'inizio dell\'epidemia</string>
