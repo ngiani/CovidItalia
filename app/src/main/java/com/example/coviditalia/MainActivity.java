@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -45,31 +46,34 @@ import java.nio.charset.Charset;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements  SituationUpdateListener {
+public class MainActivity extends AppCompatActivity implements  SituationUpdateListener, ViewPager.OnPageChangeListener {
 
-    private Situation situation;
+    private Situation currentSituation;
 
     InputStream is;
 
-    AlertDialog connectionAlertDialog;
-    private boolean alreadyDownloadedData;
+    private boolean canDownloadData = true;
 
+    AlertDialog connectionAlertDialog;
     private final int DIALOG_CLOSE = 0;
     private final int DIALOG_OK = 1;
     private boolean canShowDialog;
+
+    private ViewPager viewPager = null;
+    private SectionsPagerAdapter sectionsPagerAdapter = null;
+    private Fragment currentPageFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        ViewPager viewPager = findViewById(R.id.view_pager);
+        sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        viewPager = findViewById(R.id.view_pager);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(sectionsPagerAdapter);
+        viewPager.addOnPageChangeListener(this);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
-
-        situation = new Situation(this);
 
         //SETUP DIALOGS
         connectionAlertDialog =  new AlertDialog.Builder(MainActivity.this)
@@ -100,16 +104,28 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
                 //Download and show data (or simple close connection alert) if connected to the internet
                 if (isConnected())
                 {
-                    if (!alreadyDownloadedData)
+                    if (canDownloadData)
                     {
 
-                        String url = "https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-andamento-nazionale.json";
+                        String url = "";
+
+                        if (viewPager.getCurrentItem() == 0)
+                        {
+                            currentSituation = new NationalSituation(MainActivity.this);
+                            url = "https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-andamento-nazionale.json";
+                        }
+
+                        else if (viewPager.getCurrentItem() == 1)
+                        {
+                            currentSituation = new LocalSituation(MainActivity.this);
+                            url = "https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-regioni-latest.json";
+                        }
 
                         JSONReaderTask jsonReaderTask = new JSONReaderTask();
-                        jsonReaderTask.setResultsListener(situation);
+                        jsonReaderTask.setResultsListener(currentSituation);
                         jsonReaderTask.execute(url);
 
-                        alreadyDownloadedData = true;
+                        canDownloadData = false;
                     }
                     mDialogHandler.sendEmptyMessage(DIALOG_CLOSE);
 
@@ -142,6 +158,22 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
                 activeNetwork.isConnectedOrConnecting();
 
         return isConnected;
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        Log.d("DBG", "ON PAGE SELECTED !");
+        canDownloadData = true;
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 
 
@@ -191,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
                 JSONArray json = new JSONArray(result);
                 resultsListener.OnJSONReaderResults(json);
             } catch (JSONException e) {
-                Log.d("IOException", e.getMessage());
+                Log.d("JSONException", e.getMessage());
                 e.printStackTrace();
             } finally {
                 try {
@@ -207,50 +239,64 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
     @Override
     public void OnSituationUpdate() {
 
-        //Set current situation counters
+        if (viewPager.getCurrentItem() == 0)
+        {
+//Set current situation counters
+            TextView positives_counter = (TextView)findViewById(R.id.positive_counter);
 
-        TextView positives_counter = (TextView)findViewById(R.id.positive_counter);
+            NationalSituation nationalSituation = (NationalSituation)currentSituation;
 
-        if (situation.getNewPositives() > 0 )
-            positives_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayPositives()), String.format("%d", situation.getNewPositives())));
-        else if (situation.getNewPositives() < 0)
-            positives_counter.setText(String.format("%s (%s)", String.format("%,d", situation.getTodayPositives()), String.format("%d", situation.getNewPositives())));
-        else
-            positives_counter.setText(String.format("%,d", situation.getTodayPositives()));
+            if (nationalSituation.getNewPositives() > 0 )
+                positives_counter.setText(String.format("%s (+%s)", String.format("%,d", nationalSituation.getTodayPositives()), String.format("%d", nationalSituation.getNewPositives())));
+            else if (nationalSituation.getNewPositives() < 0)
+                positives_counter.setText(String.format("%s (%s)", String.format("%,d", nationalSituation.getTodayPositives()), String.format("%d", nationalSituation.getNewPositives())));
+            else
+                positives_counter.setText(String.format("%,d", nationalSituation.getTodayPositives()));
 
-        TextView total_cases_counter = (TextView)findViewById(R.id.total_cases_counter);
+            TextView total_cases_counter = (TextView)findViewById(R.id.total_cases_counter);
 
-        if (situation.getNewTotalCases() > 0)
-            total_cases_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayTotalCases()), String.format("%d", situation.getNewTotalCases())));
-        else if (situation.getNewTotalCases() < 0)
-            total_cases_counter.setText(String.format("%s (%s)", String.format("%,d", situation.getTodayTotalCases()), String.format("%d", situation.getNewTotalCases())));
-        else
-            total_cases_counter.setText(String.format("%,d", situation.getTodayTotalCases()));
+            if (nationalSituation.getNewTotalCases() > 0)
+                total_cases_counter.setText(String.format("%s (+%s)", String.format("%,d", nationalSituation.getTodayTotalCases()), String.format("%d", nationalSituation.getNewTotalCases())));
+            else if (nationalSituation.getNewTotalCases() < 0)
+                total_cases_counter.setText(String.format("%s (%s)", String.format("%,d", nationalSituation.getTodayTotalCases()), String.format("%d", nationalSituation.getNewTotalCases())));
+            else
+                total_cases_counter.setText(String.format("%,d", nationalSituation.getTodayTotalCases()));
 
 
-        TextView recovered_counter = (TextView)findViewById(R.id.recovered_counter);
+            TextView recovered_counter = (TextView)findViewById(R.id.recovered_counter);
 
-        if (situation.getNewTotalCases() > 0)
-            recovered_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayRecovered()), String.format("%d", situation.getNewRecovered())));
-        else if (situation.getNewTotalCases() < 0)
-            recovered_counter.setText(String.format("%s (%s)", String.format("%,d", situation.getTodayRecovered()), String.format("%d", situation.getNewRecovered())));
-        else
-            recovered_counter.setText(String.format("%,d", situation.getTodayRecovered()));
+            if (nationalSituation.getNewTotalCases() > 0)
+                recovered_counter.setText(String.format("%s (+%s)", String.format("%,d", nationalSituation.getTodayRecovered()), String.format("%d", nationalSituation.getNewRecovered())));
+            else if (nationalSituation.getNewTotalCases() < 0)
+                recovered_counter.setText(String.format("%s (%s)", String.format("%,d", nationalSituation.getTodayRecovered()), String.format("%d", nationalSituation.getNewRecovered())));
+            else
+                recovered_counter.setText(String.format("%,d", nationalSituation.getTodayRecovered()));
 
-        TextView deaths_counter = (TextView)findViewById(R.id.deaths_counter);
+            TextView deaths_counter = (TextView)findViewById(R.id.deaths_counter);
 
-        if (situation.getNewDeaths() > 0)
-            deaths_counter.setText(String.format("%s (+%s)", String.format("%,d", situation.getTodayDeaths()), String.format("%d", situation.getNewDeaths())));
-        else if (situation.getNewDeaths() < 0)
-            deaths_counter.setText(String.format("%s (%s)", String.format("%,d", situation.getTodayDeaths()), String.format("%d", situation.getNewDeaths())));
-        else
-            deaths_counter.setText(String.format("%,d", situation.getTodayDeaths()));
+            if (nationalSituation.getNewDeaths() > 0)
+                deaths_counter.setText(String.format("%s (+%s)", String.format("%,d", nationalSituation.getTodayDeaths()), String.format("%d", nationalSituation.getNewDeaths())));
+            else if (nationalSituation.getNewDeaths() < 0)
+                deaths_counter.setText(String.format("%s (%s)", String.format("%,d", nationalSituation.getTodayDeaths()), String.format("%d", nationalSituation.getNewDeaths())));
+            else
+                deaths_counter.setText(String.format("%,d", nationalSituation.getTodayDeaths()));
 
-        ShowGraphs();
+            ShowGraphs();
+        }
+
+
+
+        else if (viewPager.getCurrentItem() == 1)
+        {
+            LocalSituation localSituation = (LocalSituation)currentSituation;
+            ((tab2)currentPageFragment).GetLocalSituationMap(localSituation);
+        }
     }
 
     void ShowGraphs()
     {
+        NationalSituation situation = (NationalSituation)currentSituation;
+
         GraphView graph_1 = (GraphView)findViewById(R.id.graph);
         LineGraphSeries<DataPoint> total_cases_series = new LineGraphSeries<>();
 
@@ -319,5 +365,10 @@ public class MainActivity extends AppCompatActivity implements  SituationUpdateL
         graph_4.getViewport().setMaxY(situation.getPositivesPeak());
 
         graph_4.addSeries(positives_series);
+    }
+
+    public void setCurrentPageInstance(Fragment pageFragment)
+    {
+        currentPageFragment = pageFragment;
     }
 }

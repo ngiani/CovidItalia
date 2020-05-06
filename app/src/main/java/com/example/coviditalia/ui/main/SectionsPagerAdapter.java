@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.example.coviditalia.MainActivity;
 import com.example.coviditalia.R;
 import com.example.coviditalia.tab1;
 import com.example.coviditalia.tab2;
@@ -31,6 +32,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
+
         switch (position)
         {
             case 0:

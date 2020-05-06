@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.TileOverlayOptions;
 
 
 /**
@@ -35,6 +37,8 @@ public class tab2 extends Fragment implements OnMapReadyCallback {
     private String mParam2;
 
     private MapView situationMap;
+
+    private LocalSituation localSituation;
 
     public tab2() {
         // Required empty public constructor
@@ -73,11 +77,14 @@ public class tab2 extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
+        Log.d("DBG", "ON CREATE TAB 2 VIEW !");
+
         View view = inflater.inflate(R.layout.fragment_tab2, container, false);
 
         situationMap = (MapView)view.findViewById(R.id.mapView);
         situationMap.onCreate(savedInstanceState);
-        situationMap.getMapAsync(this);
+
+        ((MainActivity)getActivity()).setCurrentPageInstance(this);
 
         // Inflate the layout for this fragment
         return view;
@@ -107,9 +114,12 @@ public class tab2 extends Fragment implements OnMapReadyCallback {
         super.onLowMemory();
     }
 
+
     @Override
     public void onMapReady(GoogleMap googleMap)
     {
+        Log.d("DBG","ON MAP READY !");
+
         googleMap.clear();
 
         googleMap.getUiSettings().setRotateGesturesEnabled(false);
@@ -121,7 +131,16 @@ public class tab2 extends Fragment implements OnMapReadyCallback {
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(41.902782, 12.496366), 5));
 
-        googleMap.addCircle(new CircleOptions().center(new LatLng(41.902782, 12.496366)).radius(50).strokeColor(Color.BLACK).strokeWidth(2).fillColor(Color.RED).visible(true));
-    }
+        for (int i = 0; i < localSituation.getRegionsCount(); i++)
+        {
+            googleMap.addCircle(new CircleOptions().center(localSituation.getRegionCoordinates(i)).radius(localSituation.getRegionCases(i) * 2.5).strokeColor(Color.BLACK).strokeWidth(2).fillColor(Color.RED).visible(true));
+        }
 
+     }
+
+    public void GetLocalSituationMap(LocalSituation localSituation)
+    {
+        this.localSituation = localSituation;
+        situationMap.getMapAsync(this);
+    }
 }
